@@ -19,7 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	RegistrationService_Register_FullMethodName = "/sso.RegistrationService/Register"
+	RegistrationService_Register_FullMethodName      = "/sso.RegistrationService/Register"
+	RegistrationService_Authorization_FullMethodName = "/sso.RegistrationService/Authorization"
+	RegistrationService_Exit_FullMethodName          = "/sso.RegistrationService/Exit"
 )
 
 // RegistrationServiceClient is the client API for RegistrationService service.
@@ -27,6 +29,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RegistrationServiceClient interface {
 	Register(ctx context.Context, in *Registration, opts ...grpc.CallOption) (*RegistrationResponse, error)
+	Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*AccessToken, error)
+	Exit(ctx context.Context, in *Logout, opts ...grpc.CallOption) (*LogoutToken, error)
 }
 
 type registrationServiceClient struct {
@@ -47,11 +51,33 @@ func (c *registrationServiceClient) Register(ctx context.Context, in *Registrati
 	return out, nil
 }
 
+func (c *registrationServiceClient) Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*AccessToken, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AccessToken)
+	err := c.cc.Invoke(ctx, RegistrationService_Authorization_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *registrationServiceClient) Exit(ctx context.Context, in *Logout, opts ...grpc.CallOption) (*LogoutToken, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LogoutToken)
+	err := c.cc.Invoke(ctx, RegistrationService_Exit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RegistrationServiceServer is the server API for RegistrationService service.
 // All implementations must embed UnimplementedRegistrationServiceServer
 // for forward compatibility
 type RegistrationServiceServer interface {
 	Register(context.Context, *Registration) (*RegistrationResponse, error)
+	Authorization(context.Context, *Login) (*AccessToken, error)
+	Exit(context.Context, *Logout) (*LogoutToken, error)
 	mustEmbedUnimplementedRegistrationServiceServer()
 }
 
@@ -61,6 +87,12 @@ type UnimplementedRegistrationServiceServer struct {
 
 func (UnimplementedRegistrationServiceServer) Register(context.Context, *Registration) (*RegistrationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedRegistrationServiceServer) Authorization(context.Context, *Login) (*AccessToken, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Authorization not implemented")
+}
+func (UnimplementedRegistrationServiceServer) Exit(context.Context, *Logout) (*LogoutToken, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Exit not implemented")
 }
 func (UnimplementedRegistrationServiceServer) mustEmbedUnimplementedRegistrationServiceServer() {}
 
@@ -93,6 +125,42 @@ func _RegistrationService_Register_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RegistrationService_Authorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Login)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistrationServiceServer).Authorization(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RegistrationService_Authorization_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistrationServiceServer).Authorization(ctx, req.(*Login))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RegistrationService_Exit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Logout)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistrationServiceServer).Exit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RegistrationService_Exit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistrationServiceServer).Exit(ctx, req.(*Logout))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RegistrationService_ServiceDesc is the grpc.ServiceDesc for RegistrationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -104,134 +172,13 @@ var RegistrationService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Register",
 			Handler:    _RegistrationService_Register_Handler,
 		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "protos/auth.proto",
-}
-
-const (
-	AuthService_Authorization_FullMethodName = "/sso.AuthService/Authorization"
-	AuthService_Exit_FullMethodName          = "/sso.AuthService/Exit"
-)
-
-// AuthServiceClient is the client API for AuthService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type AuthServiceClient interface {
-	Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*AccessToken, error)
-	Exit(ctx context.Context, in *Logout, opts ...grpc.CallOption) (*LogoutToken, error)
-}
-
-type authServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
-	return &authServiceClient{cc}
-}
-
-func (c *authServiceClient) Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*AccessToken, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AccessToken)
-	err := c.cc.Invoke(ctx, AuthService_Authorization_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) Exit(ctx context.Context, in *Logout, opts ...grpc.CallOption) (*LogoutToken, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LogoutToken)
-	err := c.cc.Invoke(ctx, AuthService_Exit_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// AuthServiceServer is the server API for AuthService service.
-// All implementations must embed UnimplementedAuthServiceServer
-// for forward compatibility
-type AuthServiceServer interface {
-	Authorization(context.Context, *Login) (*AccessToken, error)
-	Exit(context.Context, *Logout) (*LogoutToken, error)
-	mustEmbedUnimplementedAuthServiceServer()
-}
-
-// UnimplementedAuthServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedAuthServiceServer struct {
-}
-
-func (UnimplementedAuthServiceServer) Authorization(context.Context, *Login) (*AccessToken, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Authorization not implemented")
-}
-func (UnimplementedAuthServiceServer) Exit(context.Context, *Logout) (*LogoutToken, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Exit not implemented")
-}
-func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
-
-// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to AuthServiceServer will
-// result in compilation errors.
-type UnsafeAuthServiceServer interface {
-	mustEmbedUnimplementedAuthServiceServer()
-}
-
-func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
-	s.RegisterService(&AuthService_ServiceDesc, srv)
-}
-
-func _AuthService_Authorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Login)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).Authorization(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_Authorization_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Authorization(ctx, req.(*Login))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_Exit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Logout)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).Exit(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_Exit_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Exit(ctx, req.(*Logout))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "sso.AuthService",
-	HandlerType: (*AuthServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Authorization",
-			Handler:    _AuthService_Authorization_Handler,
+			Handler:    _RegistrationService_Authorization_Handler,
 		},
 		{
 			MethodName: "Exit",
-			Handler:    _AuthService_Exit_Handler,
+			Handler:    _RegistrationService_Exit_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

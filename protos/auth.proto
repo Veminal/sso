@@ -35,9 +35,6 @@ message LogoutToken {
 
 service RegistrationService {
   rpc Register (Registration) returns (RegistrationResponse);
-}
-
-service AuthService {
   rpc Authorization (Login) returns (AccessToken);
   rpc Exit (Logout) returns (LogoutToken);
 }
