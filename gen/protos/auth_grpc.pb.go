@@ -19,166 +19,166 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	RegistrationService_Register_FullMethodName      = "/sso.RegistrationService/Register"
-	RegistrationService_Authorization_FullMethodName = "/sso.RegistrationService/Authorization"
-	RegistrationService_Exit_FullMethodName          = "/sso.RegistrationService/Exit"
+	UserService_Register_FullMethodName      = "/sso.UserService/Register"
+	UserService_Authorization_FullMethodName = "/sso.UserService/Authorization"
+	UserService_Exit_FullMethodName          = "/sso.UserService/Exit"
 )
 
-// RegistrationServiceClient is the client API for RegistrationService service.
+// UserServiceClient is the client API for UserService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type RegistrationServiceClient interface {
+type UserServiceClient interface {
 	Register(ctx context.Context, in *Registration, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*AccessToken, error)
 	Exit(ctx context.Context, in *Logout, opts ...grpc.CallOption) (*LogoutToken, error)
 }
 
-type registrationServiceClient struct {
+type userServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewRegistrationServiceClient(cc grpc.ClientConnInterface) RegistrationServiceClient {
-	return &registrationServiceClient{cc}
+func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
+	return &userServiceClient{cc}
 }
 
-func (c *registrationServiceClient) Register(ctx context.Context, in *Registration, opts ...grpc.CallOption) (*RegistrationResponse, error) {
+func (c *userServiceClient) Register(ctx context.Context, in *Registration, opts ...grpc.CallOption) (*RegistrationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RegistrationResponse)
-	err := c.cc.Invoke(ctx, RegistrationService_Register_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, UserService_Register_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *registrationServiceClient) Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*AccessToken, error) {
+func (c *userServiceClient) Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*AccessToken, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AccessToken)
-	err := c.cc.Invoke(ctx, RegistrationService_Authorization_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, UserService_Authorization_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *registrationServiceClient) Exit(ctx context.Context, in *Logout, opts ...grpc.CallOption) (*LogoutToken, error) {
+func (c *userServiceClient) Exit(ctx context.Context, in *Logout, opts ...grpc.CallOption) (*LogoutToken, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LogoutToken)
-	err := c.cc.Invoke(ctx, RegistrationService_Exit_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, UserService_Exit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// RegistrationServiceServer is the server API for RegistrationService service.
-// All implementations must embed UnimplementedRegistrationServiceServer
+// UserServiceServer is the server API for UserService service.
+// All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
-type RegistrationServiceServer interface {
+type UserServiceServer interface {
 	Register(context.Context, *Registration) (*RegistrationResponse, error)
 	Authorization(context.Context, *Login) (*AccessToken, error)
 	Exit(context.Context, *Logout) (*LogoutToken, error)
-	mustEmbedUnimplementedRegistrationServiceServer()
+	mustEmbedUnimplementedUserServiceServer()
 }
 
-// UnimplementedRegistrationServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedRegistrationServiceServer struct {
+// UnimplementedUserServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedRegistrationServiceServer) Register(context.Context, *Registration) (*RegistrationResponse, error) {
+func (UnimplementedUserServiceServer) Register(context.Context, *Registration) (*RegistrationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedRegistrationServiceServer) Authorization(context.Context, *Login) (*AccessToken, error) {
+func (UnimplementedUserServiceServer) Authorization(context.Context, *Login) (*AccessToken, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authorization not implemented")
 }
-func (UnimplementedRegistrationServiceServer) Exit(context.Context, *Logout) (*LogoutToken, error) {
+func (UnimplementedUserServiceServer) Exit(context.Context, *Logout) (*LogoutToken, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Exit not implemented")
 }
-func (UnimplementedRegistrationServiceServer) mustEmbedUnimplementedRegistrationServiceServer() {}
+func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
-// UnsafeRegistrationServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to RegistrationServiceServer will
+// UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserServiceServer will
 // result in compilation errors.
-type UnsafeRegistrationServiceServer interface {
-	mustEmbedUnimplementedRegistrationServiceServer()
+type UnsafeUserServiceServer interface {
+	mustEmbedUnimplementedUserServiceServer()
 }
 
-func RegisterRegistrationServiceServer(s grpc.ServiceRegistrar, srv RegistrationServiceServer) {
-	s.RegisterService(&RegistrationService_ServiceDesc, srv)
+func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
+	s.RegisterService(&UserService_ServiceDesc, srv)
 }
 
-func _RegistrationService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Registration)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RegistrationServiceServer).Register(ctx, in)
+		return srv.(UserServiceServer).Register(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RegistrationService_Register_FullMethodName,
+		FullMethod: UserService_Register_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistrationServiceServer).Register(ctx, req.(*Registration))
+		return srv.(UserServiceServer).Register(ctx, req.(*Registration))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RegistrationService_Authorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_Authorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Login)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RegistrationServiceServer).Authorization(ctx, in)
+		return srv.(UserServiceServer).Authorization(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RegistrationService_Authorization_FullMethodName,
+		FullMethod: UserService_Authorization_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistrationServiceServer).Authorization(ctx, req.(*Login))
+		return srv.(UserServiceServer).Authorization(ctx, req.(*Login))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RegistrationService_Exit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_Exit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Logout)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RegistrationServiceServer).Exit(ctx, in)
+		return srv.(UserServiceServer).Exit(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RegistrationService_Exit_FullMethodName,
+		FullMethod: UserService_Exit_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistrationServiceServer).Exit(ctx, req.(*Logout))
+		return srv.(UserServiceServer).Exit(ctx, req.(*Logout))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// RegistrationService_ServiceDesc is the grpc.ServiceDesc for RegistrationService service.
+// UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var RegistrationService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "sso.RegistrationService",
-	HandlerType: (*RegistrationServiceServer)(nil),
+var UserService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sso.UserService",
+	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Register",
-			Handler:    _RegistrationService_Register_Handler,
+			Handler:    _UserService_Register_Handler,
 		},
 		{
 			MethodName: "Authorization",
-			Handler:    _RegistrationService_Authorization_Handler,
+			Handler:    _UserService_Authorization_Handler,
 		},
 		{
 			MethodName: "Exit",
-			Handler:    _RegistrationService_Exit_Handler,
+			Handler:    _UserService_Exit_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

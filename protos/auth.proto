@@ -33,7 +33,7 @@ message LogoutToken {
   string token = 1;
 }
 
-service RegistrationService {
+service UserService {
   rpc Register (Registration) returns (RegistrationResponse);
   rpc Authorization (Login) returns (AccessToken);
   rpc Exit (Logout) returns (LogoutToken);
