@@ -29,7 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RegistrationServiceClient interface {
 	Register(ctx context.Context, in *Registration, opts ...grpc.CallOption) (*RegistrationResponse, error)
-	Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*AccessToken, error)
+	Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*Tokens, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 }
 
@@ -51,9 +51,9 @@ func (c *registrationServiceClient) Register(ctx context.Context, in *Registrati
 	return out, nil
 }
 
-func (c *registrationServiceClient) Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*AccessToken, error) {
+func (c *registrationServiceClient) Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*Tokens, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AccessToken)
+	out := new(Tokens)
 	err := c.cc.Invoke(ctx, RegistrationService_Authorization_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -76,7 +76,7 @@ func (c *registrationServiceClient) Logout(ctx context.Context, in *LogoutReques
 // for forward compatibility
 type RegistrationServiceServer interface {
 	Register(context.Context, *Registration) (*RegistrationResponse, error)
-	Authorization(context.Context, *Login) (*AccessToken, error)
+	Authorization(context.Context, *Login) (*Tokens, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	mustEmbedUnimplementedRegistrationServiceServer()
 }
@@ -88,7 +88,7 @@ type UnimplementedRegistrationServiceServer struct {
 func (UnimplementedRegistrationServiceServer) Register(context.Context, *Registration) (*RegistrationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedRegistrationServiceServer) Authorization(context.Context, *Login) (*AccessToken, error) {
+func (UnimplementedRegistrationServiceServer) Authorization(context.Context, *Login) (*Tokens, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authorization not implemented")
 }
 func (UnimplementedRegistrationServiceServer) Logout(context.Context, *LogoutRequest) (*LogoutResponse, error) {

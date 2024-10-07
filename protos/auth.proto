@@ -25,16 +25,25 @@ message AccessToken {
   string token = 1;
 }
 
+message RefreshToken {
+  string token = 1;
+}
+
 message LogoutRequest {
-  AccessToken accessToken = 1;
+  RefreshToken refresh = 1;
 }
 
 message LogoutResponse {
   bool logout = 1;
 }
 
+message Tokens {
+  AccessToken accessToken = 1;
+  RefreshToken refreshToken = 2;
+}
+
 service RegistrationService {
   rpc Register (Registration) returns (RegistrationResponse);
-  rpc Authorization (Login) returns (AccessToken);
+  rpc Authorization (Login) returns (Tokens);
   rpc Logout (LogoutRequest) returns (LogoutResponse);
 }
