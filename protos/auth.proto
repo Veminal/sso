@@ -21,16 +21,8 @@ message Login {
   string password = 2;
 }
 
-message AccessToken {
-  string token = 1;
-}
-
-message RefreshToken {
-  string token = 1;
-}
-
 message LogoutRequest {
-  RefreshToken refresh = 1;
+  string refreshToken = 1;
 }
 
 message LogoutResponse {
@@ -38,12 +30,22 @@ message LogoutResponse {
 }
 
 message Tokens {
-  AccessToken accessToken = 1;
-  RefreshToken refreshToken = 2;
+  string accessToken = 1;
+  string refreshToken = 2;
+}
+
+message ValidateToken {
+  string token = 1;
+}
+
+message Ok {
+  bool ok = 1;
 }
 
 service RegistrationService {
   rpc Register (Registration) returns (RegistrationResponse);
   rpc Authorization (Login) returns (Tokens);
+  rpc ValidToken(ValidateToken) returns (Ok);
+  rpc RefreshToken(ValidateToken) returns (ValidateToken);
   rpc Logout (LogoutRequest) returns (LogoutResponse);
 }

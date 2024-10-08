@@ -21,6 +21,8 @@ const _ = grpc.SupportPackageIsVersion8
 const (
 	RegistrationService_Register_FullMethodName      = "/sso.RegistrationService/Register"
 	RegistrationService_Authorization_FullMethodName = "/sso.RegistrationService/Authorization"
+	RegistrationService_ValidToken_FullMethodName    = "/sso.RegistrationService/ValidToken"
+	RegistrationService_RefreshToken_FullMethodName  = "/sso.RegistrationService/RefreshToken"
 	RegistrationService_Logout_FullMethodName        = "/sso.RegistrationService/Logout"
 )
 
@@ -30,6 +32,8 @@ const (
 type RegistrationServiceClient interface {
 	Register(ctx context.Context, in *Registration, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*Tokens, error)
+	ValidToken(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*Ok, error)
+	RefreshToken(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*ValidateToken, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 }
 
@@ -61,6 +65,26 @@ func (c *registrationServiceClient) Authorization(ctx context.Context, in *Login
 	return out, nil
 }
 
+func (c *registrationServiceClient) ValidToken(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*Ok, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Ok)
+	err := c.cc.Invoke(ctx, RegistrationService_ValidToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *registrationServiceClient) RefreshToken(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*ValidateToken, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ValidateToken)
+	err := c.cc.Invoke(ctx, RegistrationService_RefreshToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *registrationServiceClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LogoutResponse)
@@ -77,6 +101,8 @@ func (c *registrationServiceClient) Logout(ctx context.Context, in *LogoutReques
 type RegistrationServiceServer interface {
 	Register(context.Context, *Registration) (*RegistrationResponse, error)
 	Authorization(context.Context, *Login) (*Tokens, error)
+	ValidToken(context.Context, *ValidateToken) (*Ok, error)
+	RefreshToken(context.Context, *ValidateToken) (*ValidateToken, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	mustEmbedUnimplementedRegistrationServiceServer()
 }
@@ -90,6 +116,12 @@ func (UnimplementedRegistrationServiceServer) Register(context.Context, *Registr
 }
 func (UnimplementedRegistrationServiceServer) Authorization(context.Context, *Login) (*Tokens, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authorization not implemented")
+}
+func (UnimplementedRegistrationServiceServer) ValidToken(context.Context, *ValidateToken) (*Ok, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidToken not implemented")
+}
+func (UnimplementedRegistrationServiceServer) RefreshToken(context.Context, *ValidateToken) (*ValidateToken, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
 }
 func (UnimplementedRegistrationServiceServer) Logout(context.Context, *LogoutRequest) (*LogoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
@@ -143,6 +175,42 @@ func _RegistrationService_Authorization_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RegistrationService_ValidToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateToken)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistrationServiceServer).ValidToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RegistrationService_ValidToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistrationServiceServer).ValidToken(ctx, req.(*ValidateToken))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RegistrationService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateToken)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistrationServiceServer).RefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RegistrationService_RefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistrationServiceServer).RefreshToken(ctx, req.(*ValidateToken))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RegistrationService_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LogoutRequest)
 	if err := dec(in); err != nil {
@@ -175,6 +243,14 @@ var RegistrationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Authorization",
 			Handler:    _RegistrationService_Authorization_Handler,
+		},
+		{
+			MethodName: "ValidToken",
+			Handler:    _RegistrationService_ValidToken_Handler,
+		},
+		{
+			MethodName: "RefreshToken",
+			Handler:    _RegistrationService_RefreshToken_Handler,
 		},
 		{
 			MethodName: "Logout",
