@@ -37,6 +37,11 @@ message Tokens {
   string refreshToken = 2;
 }
 
+message RefreshRequest {
+  string clientId = 1;
+  Tokens tokens = 2;
+}
+
 message ValidateToken {
   string token = 1;
 }
@@ -49,6 +54,6 @@ service RegistrationService {
   rpc Register (Registration) returns (RegistrationResponse);
   rpc Authorization (Login) returns (Tokens);
   rpc ValidToken(ValidateToken) returns (Ok);
-  rpc RefreshToken(ValidateToken) returns (ValidateToken);
+  rpc RefreshToken(RefreshRequest) returns (Tokens);
   rpc Logout (LogoutRequest) returns (LogoutResponse);
 }

@@ -33,7 +33,7 @@ type RegistrationServiceClient interface {
 	Register(ctx context.Context, in *Registration, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	Authorization(ctx context.Context, in *Login, opts ...grpc.CallOption) (*Tokens, error)
 	ValidToken(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*Ok, error)
-	RefreshToken(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*ValidateToken, error)
+	RefreshToken(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*Tokens, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 }
 
@@ -75,9 +75,9 @@ func (c *registrationServiceClient) ValidToken(ctx context.Context, in *Validate
 	return out, nil
 }
 
-func (c *registrationServiceClient) RefreshToken(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*ValidateToken, error) {
+func (c *registrationServiceClient) RefreshToken(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*Tokens, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ValidateToken)
+	out := new(Tokens)
 	err := c.cc.Invoke(ctx, RegistrationService_RefreshToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ type RegistrationServiceServer interface {
 	Register(context.Context, *Registration) (*RegistrationResponse, error)
 	Authorization(context.Context, *Login) (*Tokens, error)
 	ValidToken(context.Context, *ValidateToken) (*Ok, error)
-	RefreshToken(context.Context, *ValidateToken) (*ValidateToken, error)
+	RefreshToken(context.Context, *RefreshRequest) (*Tokens, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	mustEmbedUnimplementedRegistrationServiceServer()
 }
@@ -120,7 +120,7 @@ func (UnimplementedRegistrationServiceServer) Authorization(context.Context, *Lo
 func (UnimplementedRegistrationServiceServer) ValidToken(context.Context, *ValidateToken) (*Ok, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidToken not implemented")
 }
-func (UnimplementedRegistrationServiceServer) RefreshToken(context.Context, *ValidateToken) (*ValidateToken, error) {
+func (UnimplementedRegistrationServiceServer) RefreshToken(context.Context, *RefreshRequest) (*Tokens, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
 }
 func (UnimplementedRegistrationServiceServer) Logout(context.Context, *LogoutRequest) (*LogoutResponse, error) {
@@ -194,7 +194,7 @@ func _RegistrationService_ValidToken_Handler(srv interface{}, ctx context.Contex
 }
 
 func _RegistrationService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ValidateToken)
+	in := new(RefreshRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -206,7 +206,7 @@ func _RegistrationService_RefreshToken_Handler(srv interface{}, ctx context.Cont
 		FullMethod: RegistrationService_RefreshToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistrationServiceServer).RefreshToken(ctx, req.(*ValidateToken))
+		return srv.(RegistrationServiceServer).RefreshToken(ctx, req.(*RefreshRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
